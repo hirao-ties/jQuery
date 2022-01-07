@@ -27,25 +27,26 @@
 // .hover() マウスが乗った、外れた時のタイミングを取ります。
 // .stop() アニメーションを止めます。引数次第で止め方が変わります。ググりましょう。
 $(function() {
+  var $tooltipBody = $(".tooltip-body");
+  $tooltipBody.prepend("<div class='tooltip' style='display: none;'>description</div>");
+  var $tooltip = $(".tooltip");
 
-  $(".tooltip-body").prepend("<div class='tooltip' style='display: none;'>description</div>");
-
-    $(".tooltip-body").hover(function(){
-      $(".tooltip").stop(true , false);
-      $(".tooltip").fadeIn(1000);
-    
-      $(".tooltip-body").mousemove(function(e) {
-        var x = e.pageX,
-            y = e.pageY;
-        $(".tooltip").css({
-          left : x,
-          top : y
-        });
+  $tooltipBody.hover(function(){
+    $tooltip.stop(true , false);
+    $tooltip.fadeIn(1000);
+  
+    $tooltipBody.mousemove(function(e) {
+      var x = e.pageX,
+          y = e.pageY;
+          $tooltip.css({
+        left : x,
+        top : y
       });
-    },function() {
-      $(".tooltip").stop(true, false);
-      $(".tooltip").fadeOut(500);
     });
+  },function() {
+    $tooltip.stop(true, false);
+    $tooltip.fadeOut(500);
+  });
 
 });
 </script>
