@@ -32,11 +32,21 @@
 
 
         $(function() {
+            var pageNum = 0,
+                prevSearchWord = "",
+                $lists = $(".lists");
+
             $(".search__btn").on("click",function() {
-                $(".lists").empty();
                 $(".message").empty();
 
                 var searchWord = $(".search__text__input").val();
+
+                if (searchWord !== prevSearchWord) {
+                    pageNum = 0;
+                }
+
+                pageNum = pageNum + 1;
+
                 $.ajax({
                     url: "https://app.rakuten.co.jp/services/api/BooksTotal/Search/20170404",
                     type: "GET",
@@ -45,30 +55,48 @@
                         applicationId: "1022918366804015642",
                         keyword: searchWord,
                         hits: "20",
+                        page: pageNum,
                     }
                 })
 
                 .done(function(data){
                     if(data.count === 0) {
-                        $(".lists").after("<p class='message'>検索結果が見つかりませんでした。<br>別のキーワードで検索してください。</p>")
+                        $lists.empty();
+                        $lists.after("<p class='message'>検索結果が見つかりませんでした。<br>別のキーワードで検索してください。</p>")
                     } else {
-                        $.each(data.Items, function(i, item) {
-                            var temp = "<li class='lists__item'>" + "<div class='lists__item__inner'>" +
-                                "<a href='" + item.Item.itemUrl + "'class='lists__item__link' target='_blank'>" + 
-                                "<img src='" + item.Item.largeImageUrl + "' class='lists__item__img' alt>" +
-                                "<p class='lists__item__detail'>作品名：　" + item.Item.title + "</p>" +
-                                "<p class='lists__item__detail'>作者　：　" + item.Item.author + "</p>" +
-                                "<p class='lists__item__detail'>出版社：　" + item.Item.publisherName + "</p>" + "</a>" +
-                                "</div>" + "</li>";
-                            $(".lists").prepend(temp);
-                        })
+                        
+                        if (searchWord === prevSearchWord) {
+                            $.each(data.Items, function(i, item) {
+                                var temp = "<li class='lists__item'>" + "<div class='lists__item__inner'>" +
+                                    "<a href='" + item.Item.itemUrl + "'class='lists__item__link' target='_blank'>" + 
+                                    "<img src='" + item.Item.largeImageUrl + "' class='lists__item__img' alt>" +
+                                    "<p class='lists__item__detail'>作品名：　" + item.Item.title + "</p>" +
+                                    "<p class='lists__item__detail'>作者　：　" + item.Item.author + "</p>" +
+                                    "<p class='lists__item__detail'>出版社：　" + item.Item.publisherName + "</p>" + "</a>" +
+                                    "</div>" + "</li>";
+                                $lists.prepend(temp);                          
+                            })
+                        } else {
+                            $lists.empty();
+                            $.each(data.Items, function(i, item) {
+                                var temp = "<li class='lists__item'>" + "<div class='lists__item__inner'>" +
+                                    "<a href='" + item.Item.itemUrl + "'class='lists__item__link' target='_blank'>" + 
+                                    "<img src='" + item.Item.largeImageUrl + "' class='lists__item__img' alt>" +
+                                    "<p class='lists__item__detail'>作品名：　" + item.Item.title + "</p>" +
+                                    "<p class='lists__item__detail'>作者　：　" + item.Item.author + "</p>" +
+                                    "<p class='lists__item__detail'>出版社：　" + item.Item.publisherName + "</p>" + "</a>" +
+                                    "</div>" + "</li>";
+                                $lists.prepend(temp);                          
+                            })
+                        }
                     }
+                    prevSearchWord = searchWord;
                 })
 
                 .fail(function(err) {
-                    $(".lists").after("<p class='message'>データ通信できませんでした。</p>");
+                    $lists.empty();
+                    $lists.after("<p class='message'>データ通信できませんでした。</p>");
                 })
-
             });
         });
 
